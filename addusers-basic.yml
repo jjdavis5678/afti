@@ -1,0 +1,35 @@
+---
+# Add user accounts
+
+- hosts: all
+  become: yes
+
+  tasks:
+
+    - name: add elsa account
+      ansible.builtin.user:
+        name: elsa
+        comment: Elsa Andersson
+        shell: /bin/bash
+        create_home: yes
+
+    - name: add vera account
+      ansible.builtin.user:
+        name: vera
+        comment: Vera Johansson
+        shell: /bin/bash
+        create_home: yes
+
+    - name: add alma account
+      ansible.builtin.user:
+        name: alma
+        comment: Alma Karlsson
+        shell: /bin/bash
+        create_home: yes
+
+    - name: add selma account
+      ansible.builtin.user:
+        name: selma
+        comment: Selma Eriksson
+        shell: /bin/bash
+        create_home: yes

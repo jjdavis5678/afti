@@ -1,0 +1,44 @@
+---
+#
+# Example of installing programs from project repos
+#
+- name: Install nginx from the project repos, Debian OS family
+  hosts: webservers
+  become: yes
+
+  tasks:
+
+    - name: get the repo gpg key
+      ansible.builtin.get_url:
+        url: https://nginx.org/keys/nginx_signing.key
+        dest: /etc/apt/trusted.gpg.d/nginx_signing.key.asc # Blind Faith isn't just a blues band
+            
+    - name: set up the project repo
+      ansible.builtin.deb822_repository:
+        name: nginx
+        types: deb
+        uris: https://nginx.org/packages/ubuntu
+        suites: "{{ ansible_facts['distribution_release'] }}"
+        components: nginx
+        architectures: "{{ ansible_facts['architecture'] }}"
+        signed_by: /etc/apt/trusted.gpg.d/nginx_signing.key.asc
+
+    - name: prefer the project package to the distro package
+      ansible.builtin.copy:
+        content: |
+          package: nginx
+          Pin: origin nginx.org
+          Pin: release o=nginx
+          Pin: priority: 900
+        dest: /etc/apt/preferences.d/nginx.pref
+
+    - name: now actually install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
+
+    - name: enable and start nginx
+      ansible.builtin.systemd_service:
+        name: nginx
+        state: started
+        enabled: true

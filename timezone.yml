@@ -1,0 +1,19 @@
+---
+# Set the timezone to be America/Phoenix
+
+#- hosts: all:!CBC:!Soteria:!toxic.bio5.arizona.edu:!accend.bio5.arizona.edu
+- hosts: all
+    # toxic, accend, and the Soteria boxes run EOL'd CentOS, Ubuntu, or Xen
+    # CBC runs Synology's DSM
+  become: yes
+
+  tasks:
+
+    - name: timezone | Check the current timezone
+      shell: timedatectl | awk '/Time zone/ { print $3}'
+      register: current_tz
+      changed_when: false
+
+    - name: timezone | Set the timezone to America/Phoenix
+      command: timedatectl set-timezone America/Phoenix
+      when: current_tz.stdout != "America/Phoenix"

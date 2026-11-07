@@ -1,0 +1,19 @@
+---
+# Add users to the sudo group
+
+- hosts: all
+  become: yes
+
+  tasks:
+
+    - name: add elsa to the sudo group
+      ansible.builtin.user:
+        name: elsa
+        groups: sudo
+        append: yes
+
+    - name: add selma to the sudo group
+      ansible.builtin.user:
+        name: selma
+        groups: sudo
+        append: yes

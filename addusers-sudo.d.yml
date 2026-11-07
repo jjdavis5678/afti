@@ -1,0 +1,19 @@
+---
+# Add /etc/sudoers.d/user
+
+- hosts: all
+  become: yes
+
+  tasks:
+
+    - name: write the suoders entry
+      ansible.builtin.copy:
+        dest: /etc/suoders.d/"{{ item }}"
+        owner: root
+        group: root
+        mode: '0440'
+        content: |
+          "{{ item }} ALL=(ALL) NOPASSWD: ALL"
+      loop:
+        - elsa
+        - selma

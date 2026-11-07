@@ -1,0 +1,39 @@
+---
+#
+# Install programs from distro standard repos
+#
+- name: install some favorite programs
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: include var files
+      ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', params) }}"
+      vars:
+        params:
+          files: # Most specific to least specific:
+            - "vars/{{ ansible_facts['distribution_release'] }}.yaml" # e.g. Ubuntu 26
+            - "vars/{{ ansible_facts['distribution'] }}.yaml" # e.g. Ubuntu          
+            - "vars/{{ ansible_facts['os_family'] }}.yaml"  # e.g. Debian
+            - "vars/defaults.yaml"
+    
+    - name: install expect, zile # both have the same name across Debian and RedHat OS families
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - expect
+        - zile
+
+    - name: neofetch-ish, Debian # "neowofetch" on Ubuntu 26, "neofetch" on other Debian OS, 
+      ansible.builtin.apt:
+        update_cache: yes
+        name: "{{ neofetchpkg }}"
+        state: latest
+
+    - name: neofetch-ish, Fedora # "fastfetch" replaced neofetch in Fedora.
+      ansible.builtin.dnf:
+        update_cache: yes
+        name: "{{ neofetchpkg }}"
+        state: present

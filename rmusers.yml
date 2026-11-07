@@ -1,0 +1,38 @@
+---
+# Remove user accounts
+
+- hosts: all
+  become: yes
+
+  tasks:
+
+    - name: remove elsa account
+      ansible.builtin.user:
+        name: elsa
+        state: absent
+        remove: yes # Removes the home directory too.
+      tags:
+        - elsa
+
+    - name: remove vera account
+      ansible.builtin.user:
+        name: vera
+        state: absent
+        remove: yes
+      tags:
+        - vera
+
+    - name: remove alma account
+      ansible.builtin.user:
+        name: alma
+        remove: yes
+      tags:
+        - alma
+
+    - name: remove selma account
+      ansible.builtin.user:
+        name: selma
+        state: absent
+        remove: yes
+      tags:
+        - selma

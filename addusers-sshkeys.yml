@@ -1,0 +1,97 @@
+---
+# Add user accounts and ssh public keys, with tags and include var files.
+# Run
+#
+# ansible-playbook --tags include,debug addusers-sshkeys.yml
+#
+# to check that include_vars does the right thing.
+#
+
+- hosts: all
+  become: yes
+
+  tasks:
+
+    - name: include var file for the OS family
+      ansible.builtin.include_vars:
+        file: "vars/{{ ansible_facts['os_family'] }}.yml"
+      tags:
+        - include
+
+    - name: print value of sudogroup variable
+      ansible.builtin.debug:
+        msg: "{{ sudogroup }}"
+      tags:
+        - debug
+
+    - name: add elsa account and ssh key
+      block:
+        - name: add elsa account
+          ansible.builtin.user:
+            name: elsa
+            comment: Elsa Andersson
+            shell: /bin/bash
+            create_home: yes
+            groups: "{{ sudogroup }}"
+            append: yes
+
+        - name: add elsa ssh public key
+          ansible.posix.authorized_key:
+            user: elsa
+            key: "{{ lookup('file', 'files/ssh-keys/elsa.pub') }}"
+            state: present
+      tags:
+        - elsa
+
+    - name: add vera account and ssh key
+      block:
+        - name: add vera account
+          ansible.builtin.user:
+            name: vera
+            comment: Vera Johansson
+            shell: /bin/bash
+            create_home: yes
+
+        - name: add vera ssh public key
+          ansible.posix.authorized_key:
+            user: vera
+            key: "{{ lookup('file', 'files/ssh-keys/vera.pub') }}"
+            state: present
+      tags:
+        - vera
+        
+    - name: add alma account and ssh key
+      block:
+        - name: add alma account
+          ansible.builtin.user:
+            name: alma
+            comment: Alma Karlsson
+            shell: /bin/bash
+            create_home: yes
+            
+        - name: add alma ssh public key
+          ansible.posix.authorized_key:
+            user: elsa
+            key: "{{ lookup('file', 'files/ssh-keys/alma.pub') }}"
+            state: present
+      tags:
+        - alma
+
+    - name: add selma account and ssh key
+      block:
+        - name: add selma account
+          ansible.builtin.user:
+            name: selma
+            comment: Selma Eriksson
+            shell: /bin/bash
+            create_home: yes
+            groups: "{{ sudogroup }}"
+            append: yes
+      
+        - name: add selma ssh public key
+          ansible.posix.authorized_key:
+            user: selma
+            key: "{{ lookup('file', 'files/ssh-keys/selma.pub') }}"
+            state: present
+      tags:
+        - selma

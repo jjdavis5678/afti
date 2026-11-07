@@ -1,0 +1,31 @@
+---
+# Add users to the sudo group, using variables and tags
+
+- hosts: all
+  become: yes
+  vars:
+    sudogroup: "{{ 'sudo' if ansible_facts['os_family'] == 'Debian' else 'wheel' }}"
+
+  tasks:
+
+    - name: print value of sudogroup variable
+      ansible.builtin.debug:
+        msg: "{{ sudogroup }}"
+      tags:
+        - debug
+
+    - name: add elsa to the sudo group
+      ansible.builtin.user:
+        name: elsa
+        groups: "{{ sudogroup }}"
+        append: yes
+      tags:
+        - elsa
+
+    - name: add selma to the sudo group
+      ansible.builtin.user:
+        name: selma
+        groups: "{{ sudogroup }}"
+        append: yes
+      tags:
+        - selma

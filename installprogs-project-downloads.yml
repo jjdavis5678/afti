@@ -1,0 +1,85 @@
+---
+#
+# Example of installing programs from project downloads
+#
+- name: Copy the restic executable to the control node
+  hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+
+    - name: make sure bzip2 is installed
+      ansible.builtin.package:
+        name: bzip2
+        state: present
+
+    - name: set up /usr/local/src/restic
+      ansible.builtin.file:
+        path: /usr/local/src/restic
+        state: directory
+        owner: root
+        group: root
+        mode: '755'
+
+    - name: download the sha256sum file
+      ansible.builtin.get_url:
+        url: https://github.com/restic/restic/releases/download/v0.19.1/SHA256SUMS
+        dest: /usr/local/src/restic/SHA256SUMS
+        owner: root
+        group: root
+        mode: '644'
+
+    - name: extract the sha256sum for the executable to be downloaded
+      ansible.builtin.command: awk '/restic_0.19.1_linux_arm64.bz2/ {print $1}' /usr/local/src/restic/SHA256SUMS
+      register: cksum
+      changed_when: false
+
+    - name: set a fact with the sha256sum value
+      ansible.builtin.set_fact:
+        checksum: "{{ cksum.stdout }}"
+
+    - name: check it out
+      ansible.builtin.debug:
+        msg: "{{ checksum }}"
+      tags:
+        - debug
+        
+    - name: download the restic executable
+      ansible.builtin.get_url:
+        url: https://github.com/restic/restic/releases/download/v0.19.1/restic_0.19.1_linux_arm64.bz2
+        dest: /usr/local/src/restic/restic_0.19.1_linux_arm64.bz2
+        owner: root
+        group: root
+        mode: '444'
+        checksum: "sha256:{{ checksum }}"
+      notify:
+        - uncompress
+        - install_exe
+
+  handlers:
+    - name: uncompress
+      ansible.builtin.command:
+        bunzip2 -f "/usr/local/src/restic/restic_0.19.1_linux_arm64.bz2"
+
+    - name: install_exe
+      ansible.builtin.file:
+        src: /usr/local/src/restic/restic_0.19.1_linux_arm64
+        dest: /usr/local/bin/restic
+        state: link
+        owner: root
+        group: root
+        mode: '755'
+
+- name: now distribute the executable to the managed nodes
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: ship it
+      ansible.builtin.copy:
+        src: /usr/local/bin/restic
+        dest: /usr/local/bin/restic
+        owner: root
+        group: root
+        mode: '755'
