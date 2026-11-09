@@ -8,7 +8,7 @@
 
     - name: write the suoders entry
       ansible.builtin.copy:
-        dest: /etc/suoders.d/"{{ item }}"
+        dest: /etc/sudoers.d/"{{ item }}"
         owner: root
         group: root
         mode: '0440'
