@@ -297,7 +297,7 @@ Using tags lets you selectively remove accounts.
 
 # Selecting hosts or plays
 
-Running the addusers-basic.yml playbook the command line argument
+Running the addusers-basic.yml playbook with the command line argument
 
     --limit fedora,trixie
 
