@@ -2,43 +2,35 @@
 #
 # Example of installing programs from project repos
 #
-- name: Install nginx from the project repos, Debian OS family
-  hosts: webservers
+- name: Install Postgresql on Ubuntu from the project repos
+  hosts: dbservers
   become: yes
 
   tasks:
 
     - name: get the repo gpg key
       ansible.builtin.get_url:
-        url: https://nginx.org/keys/nginx_signing.key
-        dest: /etc/apt/trusted.gpg.d/nginx_signing.key.asc # Blind Faith isn't just a blues band
+        url: https://www.postgres.org/media/keys/ACCC4CF8.asc
+        dest: /etc/apt/trusted.gpg.d/pgdg.key.asc
             
     - name: set up the project repo
       ansible.builtin.deb822_repository:
-        name: nginx
+        name: pgdg
         types: deb
-        uris: https://nginx.org/packages/ubuntu
-        suites: "{{ ansible_facts['distribution_release'] }}"
-        components: nginx
-        architectures: "{{ ansible_facts['architecture'] }}"
-        signed_by: /etc/apt/trusted.gpg.d/nginx_signing.key.asc
+        uris: https://apt.postgresql.org/pub/repos/apt
+        suites: "{{ ansible_facts['distribution_release'] }}-pgdg"
+        components: main
+        architectures: arm64  # ansible_facts['architecture'] returns aarch64, but it has to be arm64 here instead
+        signed_by: /etc/apt/trusted.gpg.d/pgdg.key.asc
 
-    - name: prefer the project package to the distro package
-      ansible.builtin.copy:
-        content: |
-          package: nginx
-          Pin: origin nginx.org
-          Pin: release o=nginx
-          Pin: priority: 900
-        dest: /etc/apt/preferences.d/nginx.pref
-
-    - name: now actually install nginx
+    - name: now install postgresql
       ansible.builtin.apt:
-        name: nginx
-        state: latest
+        update_cache: yes
+        name: postgresql
+        state: present
 
-    - name: enable and start nginx
+    - name: enable and start postgresql
       ansible.builtin.systemd_service:
-        name: nginx
+        name: postgresql
         state: started
         enabled: true
