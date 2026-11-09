@@ -1,10 +1,7 @@
 ---
 # Set the timezone to be America/Phoenix
 
-#- hosts: all:!CBC:!Soteria:!toxic.bio5.arizona.edu:!accend.bio5.arizona.edu
 - hosts: all
-    # toxic, accend, and the Soteria boxes run EOL'd CentOS, Ubuntu, or Xen
-    # CBC runs Synology's DSM
   become: yes
 
   tasks:
