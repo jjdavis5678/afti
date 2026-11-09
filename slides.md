@@ -89,7 +89,7 @@ Control nodes can run Linux or MacOS.
 # Set up a configuration file
 
 There are many [configuration](https://docs.ansible.com/projects/ansible/latest/installation_guide/intro_configuration.html) options, but all have defaults.
-Ansible will look in for the configuration file in /etc/ansible/ansible.cfg or several other locations.
+Ansible will look for the configuration file in /etc/ansible/ansible.cfg or several other locations.
 
 ---
 
@@ -162,7 +162,7 @@ for non-Linux managed nodes.
   modify user accounts.
 
 - In many references you'll see ansible.builtin.user (the
-  [fully qualified collection name](https://docs.ansible.com/projects/ansible/latest/reference_appendices/glossary.html#term-Fully-Qualified-Collection-Name-FQCN) shortened to just ansible.user.
+  [fully qualified collection name](https://docs.ansible.com/projects/ansible/latest/reference_appendices/glossary.html#term-Fully-Qualified-Collection-Name-FQCN)) shortened to just ansible.user.
 
 ---
 
@@ -281,9 +281,9 @@ uses the loop playbook statement to loop over the user names.
 
 This playbook uses a community module, ansible.posix.authorized_key.
 
-It also uses an included file for variables, either var/Debian.yml or
-var/RedHat.yml, depending on the value of the os_family variable.  And
-it uses the block playbook statement to group related plays together.
+It also uses an included file for variables, either Debian.yml or
+RedHat.yml, depending on the value of the os_family variable.  And it
+uses the block playbook statement to group related plays together.
 
 ---
 
@@ -361,11 +361,11 @@ output about changed plays when running a playbook.
 
 The next playbooks work through three common scenarios for installing programs on managed nodes
 
-- Installing programs from distribution packages.
+- Installing programs from distribution packages
 
-- Installing programs from project packages, and
+- Installing programs from project packages
 
-- Installing programs from project downloads.
+- Installing programs from project downloads
 
 ---
 
@@ -391,24 +391,24 @@ variable inclusion setup than in previous playbooks to handle that.
 
 [installprogs-project-pkgs.yml](https://github.com/jjdavis5678/afti/blob/main/installprogs-project-pkgs.yml)
 
-This sets up the nginx webserver from the project's own repo
-packages. It uses the ansible.builtin.fetch_url and
-ansible.builtin.deb822 packages to configure the nginx repos on the
-managed node. 
+This sets up the postgresql database server from the project's own
+repo packages. It uses the ansible.builtin.fetch_url and
+ansible.builtin.deb822 packages to configure the postgresql repos on
+the managed node.
 
 ---
 
 The playbook uses ansible.builtin.copy to generates an apt preferences
-file to prefer the project repo version of nginx over the distribution
-repo version of nginx.
+file to prefer the project repo version of postgresql over the
+distribution repo version of postgresql.
 
 --- 
 
 The last play calls ansible.builtin.systemd_service to enable and
-start nginx.  While this usually happens automatically when a package
-is installed, since the playbook is idempotent it doesn't hurt to add
-this.  If systemd has already enabled and started nginx, the play will
-be skipped.
+start postgresql.  While this usually happens automatically when a
+package is installed, since the playbook is idempotent it doesn't hurt
+to add this.  If systemd has already enabled and started postgresql,
+the play will be skipped.
 
 ---
 
