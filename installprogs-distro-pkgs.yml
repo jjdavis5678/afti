@@ -13,10 +13,18 @@
       vars:
         params:
           files: # Most specific to least specific:
-            - "vars/{{ ansible_facts['distribution_release'] }}.yaml" # e.g. Ubuntu 26
-            - "vars/{{ ansible_facts['distribution'] }}.yaml" # e.g. Ubuntu          
-            - "vars/{{ ansible_facts['os_family'] }}.yaml"  # e.g. Debian
-            - "vars/defaults.yaml"
+            - "{{ ansible_facts['distribution_release'] }}-vars.yml" # e.g. Ubuntu 26
+            - "{{ ansible_facts['distribution'] }}-vars.yml" # e.g. Ubuntu          
+            - "{{ ansible_facts['os_family'] }}-vars.yml"  # e.g. Debian
+            - "default-vars.yml"
+      tags:
+        - include
+
+    - name: show neofetchpkg value
+      ansible.builtin.debug:
+        msg: "{{ neofetchpkg }}"
+      tags:
+        - debug        
     
     - name: install expect, zile # both have the same name across Debian and RedHat OS families
       ansible.builtin.package:
@@ -26,14 +34,16 @@
         - expect
         - zile
 
-    - name: neofetch-ish, Debian # "neowofetch" on Ubuntu 26, "neofetch" on other Debian OS, 
+    - name: neofetch, Debian # "neowofetch" on Ubuntu 26, "neofetch" on other Debian OS, 
       ansible.builtin.apt:
         update_cache: yes
         name: "{{ neofetchpkg }}"
         state: latest
+      when: ansible_facts['os_family'] == "Debian"
 
-    - name: neofetch-ish, Fedora # "fastfetch" replaced neofetch in Fedora.
+    - name: neofetch, Fedora # "fastfetch" replaced neofetch in Fedora.
       ansible.builtin.dnf:
         update_cache: yes
         name: "{{ neofetchpkg }}"
         state: present
+      when: ansible_facts['os_family'] == "RedHat"
