@@ -286,7 +286,7 @@ Using tags lets you selectively remove accounts.
 
 # Selecting hosts or plays
 
-Running the addusers-basic.yml playbook the command line argument
+Running the addusers-basic.yml playbook with the command line argument
 
     --limit fedora,trixie
 
@@ -384,12 +384,6 @@ This sets up the postgresql database server from the project's own
 repo packages. It uses the ansible.builtin.fetch_url and
 ansible.builtin.deb822 packages to configure the postgresql repos on
 the managed node.
-
----
-
-The playbook uses ansible.builtin.copy to generates an apt preferences
-file to prefer the project repo version of postgresql over the
-distribution repo version of postgresql.
 
 --- 
 
