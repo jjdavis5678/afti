@@ -264,17 +264,6 @@ The playbook tags lets you selectively add accounts.
 
 ---
 
-# Password-less sudo access
-
-[addusers-sudo.d.yml](https://github.com/jjdavis5678/afti/blob/main/addusers-sudo.d.yml)
-
-This approach skips using a sudo group, and most recent Linux distros
-will have a /etc/sudoers.d directory.  It also shows a way to create
-configuration files by using the ansible.builtin.copy module.  It
-uses the loop playbook statement to loop over the user names.
-
----
-
 # Adding ssh keys
 
 [addusers-sshkeys.yml](https://github.com/jjdavis5678/afti/blob/main/addusers-sshkeys.yml)
@@ -297,7 +286,7 @@ Using tags lets you selectively remove accounts.
 
 # Selecting hosts or plays
 
-Running the addusers-basic.yml playbook with the command line argument
+Running the addusers-basic.yml playbook the command line argument
 
     --limit fedora,trixie
 
